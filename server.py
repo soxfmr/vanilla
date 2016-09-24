@@ -1,9 +1,10 @@
 import time
 import Queue
+import importlib
 import threading
 from socket import *
-from package import isnewpackage
-from package import PackageBuilder
+from core.package import isnewpackage
+from core.package import PackageBuilder
 from middleware.auth import Auth
 from middleware.shield import Shield
 
@@ -14,12 +15,29 @@ def log(message):
         print message
 
 def import_modules():
-    pass
+    instance    = __import__('module')
+    baseMod     = getattr(instance, 'Module')
+    # List all of modules
+    modules     = dir(instance)
+    availableMods = []
+
+    for i in range(len(modules)):
+        addr = getattr(instance, modules[i])
+        try:
+            if issubclass(addr, baseMod):
+                availableMods.append({
+                    'id'    : i,
+                    'name'  : modules[i],
+                    'addr'  : addr
+                })
+        except TypeError:
+            pass
+
+    return availableMods
+
 
 class ModuleFactory(object):
-
-    def __init__(self):
-        pass
+    modules = dict()
 
     @staticmethod
     def addModule(self, method):
@@ -56,11 +74,10 @@ class Dispatcher(object):
             module = ModuleFactory.createModule(module)
             result = module.execute(action, params)
 
-            if result: self.channel.put(result)
+            if result: self.channel.put( lastpkg.build(data) )
 
-        # marked
-        self.lastpkg = None
-        # log('[+] Receive: ' + data)
+            # marked
+            self.lastpkg = None
 
 class Worker(threading.Thread):
 
@@ -187,6 +204,7 @@ class Server(object):
         work.start()
 
         log('[+] Client {} auth successfully, worker thread started'.format( addr ))
+
 try:
     middlewares = { 'shield' : Shield(), 'auth' : Auth() }
     server = Server(addr=('0.0.0.0', 8080), middlewares=middlewares)

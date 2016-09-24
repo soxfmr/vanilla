@@ -7,7 +7,7 @@ class Shield(object):
         self.seconds = seconds
         self.filename = filename
 
-        self.blacklist = []
+        self.blacklist = self.__load()
         self.logger = dict()
 
     def __load(self):

@@ -53,7 +53,8 @@ class PackageBuilder(object):
         if len(self.data) < self.length:
             raise Value('Incomplete package to unpack')
 
-        data = self.encryptor.decrypt(data)
+        data = self.encryptor.decrypt(data) if self.encryptor else \
+            self.data
 
         module = unpack(FMT_REQUEST_MODUEL, data[:LEN_REQUEST_MODUEL])
         action = unpack(FMT_REQUEST_MODULE_ACTION, data[LEN_REQUEST_MODUEL:\
@@ -62,6 +63,9 @@ class PackageBuilder(object):
         params = data[LEN_REQUEST_MODUEL + LEN_REQUEST_MODULE_ACTION:]
 
         return (module, action, params)
+
+    def build(self, data):
+        pass
 
 
 def isnewpackage(data):
