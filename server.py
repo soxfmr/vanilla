@@ -13,17 +13,21 @@ def import_modules():
     baseMod     = getattr(instance, 'Module')
     # List all of modules
     modules     = dir(instance)
+
+    i = 1
     availableMods = []
 
-    for i in range(len(modules)):
-        addr = getattr(instance, modules[i])
+    for module in modules:
+        addr = getattr(instance, module)
         try:
-            if issubclass(addr, baseMod) and modules[i] != 'Module':
+            if issubclass(addr, baseMod) and module != 'Module':
                 availableMods.append({
-                    'id'    : i + 1,
-                    'name'  : modules[i],
-                    'addr'  : addr
+                    'id'    : i,
+                    'name'  : module,
+                    'addr'  : addr,
+                    'desc'  : addr.__doc__
                 })
+                i += 1
         except TypeError:
             pass
 

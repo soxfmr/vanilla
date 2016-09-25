@@ -6,12 +6,19 @@ class Module(object):
         self.upper = len(self.actions)
 
     def __load(self):
+        i = 1
         methods = []
         actions = [name for name in dir(self) if self.prefix in name].sort()
 
         for action in actions:
             method = getattr(self, action)
-            methods.append(method)
+            methods.append({
+                'id'    : i,
+                'name'  : action,
+                'addr'  : method,
+                'desc'  : method.__doc__
+            })
+            i += 1
 
         return methods
 
