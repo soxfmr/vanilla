@@ -35,7 +35,7 @@ class Shield(object):
         current = time.time()
         guest = self.logger[ip]
 
-        if guest['time'] - current <= self.seconds and \
+        if current - guest['time'] <= self.seconds and \
             guest['counter'] >= self.maxtries:
             # R.I.P.
             self.blacklist.append(geust[ip])
