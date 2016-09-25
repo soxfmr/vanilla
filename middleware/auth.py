@@ -15,7 +15,7 @@ def Auth(object):
             if not keydata:
                 return True
             # Not equals, connection will be drop
-            return encryptor.verify(keydata)
+            return not encryptor.verify(keydata)
         finally:
             # Restore in blocking mode
             if client: client.setblocking(1)
