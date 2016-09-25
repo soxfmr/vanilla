@@ -45,7 +45,7 @@ def main():
 
         middlewares = {
             'shield' : Shield(),
-            'auth' : Auth( RSAEncryptor(env['password'], env['key']) ) }
+            'auth' : Auth( env['password'], RSAEncryptor(env['key']) ) }
 
         server = Server(addr=('0.0.0.0', 8080), middlewares=middlewares)
         server.start()

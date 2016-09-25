@@ -1,4 +1,6 @@
 import base
+from subprocess import Popen
+from subprocess import PIPE
 
 class PortForward(base.Module):
 
@@ -6,7 +8,10 @@ class PortForward(base.Module):
         pass
 
     def action_show(self, params):
-        pass
+        args = 'netsh interface portproxy show all'.split()
+        process = Popen(args, stdout=PIPE)
+
+        result = process.stdout.read()
 
     def action_add(self, params):
         pass
