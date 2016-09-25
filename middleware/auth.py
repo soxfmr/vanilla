@@ -2,8 +2,7 @@ import time
 
 def Auth(object):
 
-    def __init__(self, key, encryptor, timeout=8):
-        self.hash = encryptor.hash(key)
+    def __init__(self, encryptor, timeout=8):
         self.encryptor = encryptor
         self.timeout = timeout
 
@@ -16,7 +15,7 @@ def Auth(object):
             if not keydata:
                 return True
             # Not equals, connection will be drop
-            return encryptor.decrypt(keydata) != self.hash
+            return encryptor.verify(keydata)
         finally:
             # Restore in blocking mode
             if client: client.setblocking(1)
