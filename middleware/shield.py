@@ -1,4 +1,5 @@
 import time
+import logging
 
 class Shield(object):
 
@@ -44,6 +45,8 @@ class Shield(object):
                 handle.write('{}\n'.format( ip ))
             # remove client
             del self.logger[ip]
+
+            logging.info('Remote guest {} has been banned'.format( ip ))
 
             return True
 

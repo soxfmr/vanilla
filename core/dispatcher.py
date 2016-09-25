@@ -1,4 +1,3 @@
-import logger
 import logging
 from package import isnewpackage
 from package import PackageBuilder

@@ -1,5 +1,4 @@
 import Queue
-import logger
 import logging
 import threading
 

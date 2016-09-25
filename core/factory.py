@@ -1,4 +1,3 @@
-import logger
 import logging
 
 
