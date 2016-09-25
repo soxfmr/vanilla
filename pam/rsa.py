@@ -23,7 +23,7 @@ class RSAEncryptor(object):
         with open(self.keyfile, 'r') as handle:
             key = RSA.importKey(handle.read(), self.passphrase)
             encryptor = PKCS1_PSS.new(key)
-            return encryptor.verify( self.hash( self.key ) )
+            return encryptor.verify( self.hash( self.key ), keydata )
 
     def hash(self, key):
         return SHA512.new(key)

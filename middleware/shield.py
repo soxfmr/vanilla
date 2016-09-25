@@ -12,12 +12,15 @@ class Shield(object):
         self.logger = dict()
 
     def __load(self):
+        blacklist = []
         try:
             with open(self.filename, 'r') as handle:
                 for ip in handle:
-                    self.blacklist.append(ip.strip())
+                    blacklist.append(ip.strip())
         except IOError, e:
             pass
+
+        return blacklist
 
     def denied(self, client, addr):
         ip, port = addr
@@ -39,7 +42,7 @@ class Shield(object):
         if current - guest['time'] <= self.seconds and \
             guest['counter'] >= self.maxtries:
             # R.I.P.
-            self.blacklist.append(geust[ip])
+            self.blacklist.append(ip)
             # save to file
             with open(self.filename, 'a+') as handle:
                 handle.write('{}\n'.format( ip ))

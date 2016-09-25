@@ -45,12 +45,12 @@ class Server(object):
         try:
             while True:
                 client, addr = self.server.accept()
+                logging.info('Client join: %s', str(addr))
+                
                 # Go to ask for hr if he let you go
                 thread = threading.Thread(target=self.__hr, args=(client, addr))
                 thread.setDaemon(True)
                 thread.start()
-
-                logging.info('Client join: %s', str(addr))
         except IOError, e:
             logging.error('Exception in handle thread: %s', str(e))
 
@@ -59,6 +59,11 @@ class Server(object):
         for name, middleware in self.middlewares.items():
             if middleware.denied(client, addr):
                 logging.warn('Client {} auth failed in middleware {}'.format( addr, name ))
+
+                client.close()
+                logging.info('Client {} out.'.format(addr))
+
+                return False
 
         work = Worker(client, addr, Dispatcher(self.encryptor))
         work.setDaemon(True)
