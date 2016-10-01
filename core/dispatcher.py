@@ -1,5 +1,4 @@
 import logging
-from package import isnewpackage
 from package import PackageBuilder
 from factory import ModuleFactory
 
@@ -15,7 +14,7 @@ class Dispatcher(object):
         self.channel = channel
 
     def dispatch(self, data):
-        if isnewpackage(data):
+        if PackageBuilder.isnewpackage(data):
             if self.lastpkg:
                 logging.warn('New package present, previous package deprecated.')
             self.lastpkg = PackageBuilder(data, self.encryptor)
