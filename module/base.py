@@ -6,24 +6,20 @@ class Module(object):
         self.upper = len(self.actions)
 
     def __load(self):
-        i = 1
-        methods = []
+        methods = {}
         actions = [name for name in dir(self) if self.prefix in name].sort()
 
         for action in actions:
             method = getattr(self, action)
-            methods.append({
-                'id'    : i,
-                'name'  : action,
+            methods[action] = {
                 'addr'  : method,
                 'desc'  : method.__doc__
-            })
-            i += 1
+            }
 
         return methods
 
     def execute(self, action, params):
-        if action < self.upper:
+        if action in self.actions:
             method = self.actions[action]
             return method(params)
 

@@ -5,16 +5,17 @@ class ModuleFactory(object):
     modules = []
 
     @staticmethod
-    def addModule(module):
-        ModuleFactory.modules.append( module )
+    def addModule(name, info):
+        ModuleFactory.modules[name] = info
 
-        logging.info('Module {} plug-in'.format( module['name'] ))
+        logging.info('Module {} plug-in'.format( name ))
 
     @staticmethod
-    def createModule(module):
-        for m in ModuleFactory.modules:
-            if m['id'] == module:
-                return m['addr']()
+    def createModule(name):
+        if name in ModuleFactory.modules:
+            module = ModuleFactory.modules[name]
+            return module['addr']()
+            
         return None
 
     @staticmethod
