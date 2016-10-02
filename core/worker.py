@@ -3,11 +3,9 @@ import logging
 import threading
 
 
-class Worker(threading.Thread):
+class Worker(object):
 
     def __init__(self, socket, addr, dispatcher):
-        threading.Thread.__init__(self)
-
         self.socket = socket
         self.addr = addr
 
@@ -28,9 +26,6 @@ class Worker(threading.Thread):
         for thread in threads:
             thread.setDaemon(True)
             thread.start()
-
-        for thread in threads:
-            thread.join()
 
     def __receive(self):
         try:

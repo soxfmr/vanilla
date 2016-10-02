@@ -46,7 +46,7 @@ class Server(object):
             while True:
                 client, addr = self.server.accept()
                 logging.info('Client join: %s', str(addr))
-                
+
                 # Go to ask for hr if he let you go
                 thread = threading.Thread(target=self.__hr, args=(client, addr))
                 thread.setDaemon(True)
@@ -65,8 +65,7 @@ class Server(object):
 
                 return False
 
-        work = Worker(client, addr, Dispatcher(self.encryptor))
-        work.setDaemon(True)
-        work.start()
+        worker = Worker(client, addr, Dispatcher(self.encryptor))
+        worker.run()
 
         logging.info('Client {} auth successfully, worker thread started'.format( addr ))

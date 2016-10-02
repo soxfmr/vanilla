@@ -25,12 +25,15 @@ class Dispatcher(object):
             self.lastpkg.append(data)
 
         if self.lastpkg.iscomplete():
-            module, action, params = self.lastpkg.unpack()
+            try:
+                module, action, params = self.lastpkg.unpack()
 
-            module = ModuleFactory.createModule(module)
-            result = module.execute(action, params)
+                module = ModuleFactory.createModule(module)
+                result = module.execute(action, params)
 
-            if result: self.channel.put( lastpkg.build(data) )
-
-            # marked
-            self.lastpkg = None
+                if result: self.channel.put( self.lastpkg.redraw(data) )
+            except Exception, e:
+                logging.error('An error occurred when invoke the module: ' + str(e))
+            finally:
+                # marked
+                self.lastpkg = None

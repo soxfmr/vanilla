@@ -6,9 +6,9 @@ from struct import calcsize
 
 '''
     Action package format:
-    +-------------------------------------------------------------------------------------+
-    | Magic Word 4 bytes | Data Length 4 bytes | Request Module | Module Action | Variant |
-    +-------------------------------------------------------------------------------------+
+    +--------------------------------------------------------------------------------------------------+
+    | Magic Word 4 bytes | Data Length 4 bytes | Request id | Request Module | Module Action | Variant |
+    +--------------------------------------------------------------------------------------------------+
 '''
 
 PACKAGE_MAGIC_WORD = '\x01\x22\x33\x01'
@@ -23,10 +23,11 @@ LEN_PRE_REQUIREMENT = LEN_PACKAGE_MAGIC_WORD + LEN_PACKAGE_DATA_LENGTH
 
 class PackageBuilder(object):
 
-    def __init__(self, data, encryptor):
+    def __init__(self, data=None, encryptor=None):
+        self.uid = 0
         self.length = 0
-        self.encryptor = encryptor
         self.data = data
+        self.encryptor = encryptor
 
     def append(self, data):
         if not self.data:
@@ -49,7 +50,7 @@ class PackageBuilder(object):
 
     def unpack(self):
         if not self.data:
-            raise ValueError('Invalid data to unpack.')
+            raise ValueError('Invalid data to unpack')
 
         if len(self.data) < self.length:
             raise ValueError('Incomplete package to unpack')
@@ -60,16 +61,31 @@ class PackageBuilder(object):
         # Decompress
         data = zlib.decompress(data)
 
-        module, action, params = self.data.split('|', 2)
+        self.uid, module, action, params = self.data.split('|', 3)
         return (module, action, params)
 
-    def build(self, module, action, params):
-        self.data = '{}|{}|{}'.format(module, action, params)
+    def redraw(self, data):
+        if not self.uid:
+            raise ValueError('Invalid request id to reuse')
 
+        data = '{}|{}'.format(self.uid, data)
+        return self.__build(data)
+
+
+    def build(self, module, action, params):
+        # Request id
+        self.uid = self.uid + 1 if self.uid < 0xffff else 1
+        # Compose package data
+        data = '{}|{}|{}|{}'.format(self.uid, module, action, params)
+
+        return (self.uid, self.__build(data))
+
+    def __build(self, data):
         # Compress
-        data = zlib.compress(self.data)
+        data = zlib.compress(data)
         # Encrypt
-        data = self.encryptor.encryt(data) if self.encryptor else data
+        if self.encryptor:
+            data = self.encryptor.encryt(data)
 
         return '{}{}{}'.format( pack(FMT_PACKAGE_MAGIC_WORD, PACKAGE_MAGIC_WORD),
             pack(FMT_PACKAGE_DATA_LENGTH, len(data)), data)
