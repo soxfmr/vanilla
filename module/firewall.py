@@ -35,7 +35,7 @@ class FirewallRule(base.Module):
 
                     rulemap.rulemap.append({
                         'name' : name,
-                        'localport' : int(localport),
+                        'localport' : localport,
                         'remoteip' : remoteip
                     })
         except Exception, e:
@@ -49,7 +49,7 @@ class FirewallRule(base.Module):
 
         process = Popen(['netsh', 'advfirewall', 'firewall', 'add', 'rule',
             'name=' + rulename,
-            'localport=%d' % params['localport'],
+            'localport=' + params['localport'],
             'remoteip=' + params['remoteip'],
             'dir=in',
             'action=allow',

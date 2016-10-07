@@ -25,9 +25,6 @@ class PortForward(base.Module):
                 listenaddress, listenport, \
                     connectaddress, connectport = record.split()
 
-                listenport = int(listenport)
-                connectport = int(connectport)
-
                 portmap.portmap.append({
                     'listenaddress' : listenaddress,
                     'listenport' : listenport,
@@ -41,9 +38,9 @@ class PortForward(base.Module):
 
     def action_add(self, params):
         process =  Popen(['netsh', 'interface', 'portproxy', 'add', 'v4tov4',
-            'listenport=%d' % params['listenport'],
+            'listenport=' + params['listenport'],
             'connectaddress=' + params['connectaddress'],
-            'connectport=%d' % params['connectport'],
+            'connectport=' + params['connectport'],
             'protocol=tcp'], stdout=PIPE)
         process.wait()
 
@@ -51,7 +48,7 @@ class PortForward(base.Module):
 
     def action_remove(self, params):
         process =  Popen(['netsh', 'interface', 'portproxy', 'delete', 'v4tov4',
-            'listenport=%d' % params['listenport'],
+            'listenport=' + params['listenport'],
             'protocol=tcp'], stdout=PIPE)
         process.wait()
 
