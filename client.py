@@ -47,20 +47,20 @@ class CommandDispatcher(object):
                 if toplevel:
                     command = [command]
 
-                result[name] = self.__get_submenu(command, toplevel)
+                result[name] = self.__get_submenu(name, command, toplevel)
             else:
                 raise ValueError('Invalid commands')
 
         return result
 
-    def __get_submenu(self, params, toplevel=False):
+    def __get_submenu(self, module, params, toplevel=False):
         result = []
         for command in params:
             if isinstance(command, (tuple, str)):
                 menu = Attribute(name='', params=[], help='', callback=None,
                     entities=[], toplevel=toplevel)
                 # help message
-                message = []
+                message = [module]
 
                 # top level command or with the callback function
                 if isinstance(command, tuple):
@@ -111,7 +111,7 @@ class CommandDispatcher(object):
 
     def list(self):
         if self.map:
-            print ','.join( self.map.keys() )
+            print ', '.join( self.map.keys() )
 
     def show(self, module):
         if self.map and module in self.map:
@@ -122,13 +122,13 @@ class Workbench(object):
 
     def __init__(self, dispatcher):
         self.currentId = 0
-        self.prompt = 'vs'
+        self.prompt = 'vanilla'
         self.dispatcher = dispatcher
 
     def forge(self):
         try:
             while True:
-                command = raw_input('[{}:{}]>> '.format(self.prompt, self.currentId))
+                command = raw_input('\033[92m{} [{}]>\033[0m '.format(self.prompt, self.currentId))
                 # dispatcher.dispatch(command)
                 if 'list' in command:
                     self.dispatcher.list()
@@ -146,8 +146,8 @@ def main():
             '-l::Show forward table'
         ],
         'firewall' : [
-            '-a:[localport] [remoteip]:Append a firewall rule that open the port for remote ip',
-            '-d:[name]:Remove a firewall rule:?all',
+            '-a:[localport] [remoteip]:Allow the traffic from remote ip through local port',
+            '-d:[name]:Remove firewall rule:?all',
             '-s:[name]:Show the detail information of the rule',
             '-l::Show firewall rules (partial)'
         ]
